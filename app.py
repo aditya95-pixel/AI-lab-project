@@ -22,6 +22,8 @@ parkinsons_model = pickle.load(open(f'parkinsons_model.pkl', 'rb'))
 parkinsons_scaler = pickle.load(open(f'parkinsons_scaler.pkl', 'rb'))
 lung_model = pickle.load(open(f'lung_cancer_model.pkl', 'rb'))
 lung_scaler = pickle.load(open(f'lung_cancer_scaler.pkl', 'rb'))
+kidney_model=pickle.load(open(f'kidney_model.pkl', 'rb'))
+kidney_scaler=pickle.load(open(f'kidney_scaler.pkl','rb'))
 # sidebar for navigation
 with st.sidebar:
     selected = option_menu('Multiple Disease Prediction System',
@@ -29,9 +31,10 @@ with st.sidebar:
                            ['Diabetes Prediction',
                             'Heart Disease Prediction',
                             'Parkinsons Prediction',
-                            'Lung Cancer Prediction'],
+                            'Lung Cancer Prediction',
+                            'Chronic Kidney Disease Prediction'],
                            menu_icon='hospital-fill',
-                           icons=['activity', 'heart', 'person','person'],
+                           icons=['activity', 'heart', 'person','person','heart'],
                            default_index=0)
 
 
@@ -331,3 +334,109 @@ if selected == 'Lung Cancer Prediction':
             lung_diagnosis = 'The person does not have lung cancer'
 
     st.success(lung_diagnosis)
+
+#chronic kidney disease prediction
+if selected == 'Chronic Kidney Disease Prediction':
+
+    # page title
+    st.title('Chronic Kidney Disease Prediction using ML')
+
+    # getting the input data from the user
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        age = st.text_input('Age')
+
+    with col2:
+        bp = st.text_input('Blood Pressure (bp in mm/Hg)')
+
+    with col3:
+        sg = st.text_input('Specific Gravity (sg in range 1.005 to 1.025)')
+
+    with col1:
+        al = st.text_input('Albumin (al: 0 to 5)')
+
+    with col2:
+        su = st.text_input('Sugar (su: 0 to 5)')
+
+    with col3:
+        rbc = st.text_input('Red Blood Cells (rbc: 1=normal, 0=abnormal)')
+
+    with col1:
+        pc = st.text_input('Pus Cell (pc: 1=normal, 0=abnormal)')
+
+    with col2:
+        pcc = st.text_input('Pus Cell Clumps (pcc: 1=present, 0=not present)')
+
+    with col3:
+        ba = st.text_input('Bacteria (ba: 1=present, 0=not present)')
+
+    with col1:
+        bgr = st.text_input('Blood Glucose Random (bgr in mgs/dl)')
+
+    with col2:
+        bu = st.text_input('Blood Urea (bu in mgs/dl)')
+
+    with col3:
+        sc = st.text_input('Serum Creatinine (sc in mgs/dl)')
+
+    with col1:
+        sod = st.text_input('Sodium (sod in mEq/L)')
+
+    with col2:
+        pot = st.text_input('Potassium (pot in mEq/L)')
+
+    with col3:
+        hemo = st.text_input('Hemoglobin (hemo in gms)')
+
+    with col1:
+        pcv = st.text_input('Packed Cell Volume (pcv)')
+
+    with col2:
+        wc = st.text_input('White Blood Cell Count (wc in cells/cumm)')
+
+    with col3:
+        rc = st.text_input('Red Blood Cell Count (rc in millions/cmm)')
+
+    with col1:
+        htn = st.text_input('Hypertension (htn: 1=Yes, 0=No)')
+
+    with col2:
+        dm = st.text_input('Diabetes Mellitus (dm: 1=Yes, 0=No)')
+
+    with col3:
+        cad = st.text_input('Coronary Artery Disease (cad: 1=Yes, 0=No)')
+
+    with col1:
+        appet = st.text_input('Appetite (appet: 1=Good, 0=Poor)')
+
+    with col2:
+        pe = st.text_input('Pedal Edema (pe: 1=Yes, 0=No)')
+
+    with col3:
+        ane = st.text_input('Anemia (ane: 1=Yes, 0=No)')
+
+    # code for Prediction
+    kidney_diagnosis = ''
+
+    # creating a button for Prediction
+    if st.button('CKD Test Result'):
+
+        # Prepare user input
+        user_input = [age, bp, sg, al, su, rbc, pc, pcc, ba, bgr, bu, sc, sod, pot, hemo, pcv, wc, rc, htn, dm, cad, appet, pe, ane]
+        user_input = [float(x) for x in user_input]
+        user_input = np.asarray(user_input).reshape(1, -1)
+
+        # Feature scaling (assuming 'kidney_scaler' is your scaler)
+        scaled_features = kidney_scaler.transform(user_input)
+
+        # Prediction (assuming 'kidney_model' is your trained ML model)
+        kidney_prediction = kidney_model.predict(scaled_features)
+
+        if kidney_prediction[0] == 1:
+            kidney_diagnosis = 'The person has chronic kidney disease'
+        else:
+            kidney_diagnosis = 'The person does not have chronic kidney disease'
+
+    st.success(kidney_diagnosis)
+
