@@ -24,6 +24,8 @@ lung_model = pickle.load(open(f'lung_cancer_model.pkl', 'rb'))
 lung_scaler = pickle.load(open(f'lung_cancer_scaler.pkl', 'rb'))
 kidney_model=pickle.load(open(f'kidney_model.pkl', 'rb'))
 kidney_scaler=pickle.load(open(f'kidney_scaler.pkl','rb'))
+liver_model=pickle.load(open(f'liver_model.pkl', 'rb'))
+liver_scaler=pickle.load(open(f'liver_scaler.pkl','rb'))
 # sidebar for navigation
 with st.sidebar:
     selected = option_menu('Multiple Disease Prediction System',
@@ -32,9 +34,10 @@ with st.sidebar:
                             'Heart Disease Prediction',
                             'Parkinsons Prediction',
                             'Lung Cancer Prediction',
-                            'Chronic Kidney Disease Prediction'],
+                            'Chronic Kidney Disease Prediction',
+                            'Liver Disease Prediction'],
                            menu_icon='hospital-fill',
-                           icons=['activity', 'heart', 'person','person','heart'],
+                           icons=['activity', 'heart', 'person','person','heart','activity'],
                            default_index=0)
 
 
@@ -440,3 +443,67 @@ if selected == 'Chronic Kidney Disease Prediction':
 
     st.success(kidney_diagnosis)
 
+
+if selected == 'Liver Disease Prediction':
+
+    # Page title
+    st.title('Liver Disease Prediction using ML')
+
+    # Get the input data from the user
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        age = st.text_input('Age')
+
+    with col2:
+        gender = st.selectbox('Gender', options=['Male', 'Female'])
+        gender = 0 if gender == 'Male' else 1
+
+    with col3:
+        tb = st.text_input('Total Bilirubin (TB)')
+
+    with col1:
+        db = st.text_input('Direct Bilirubin (DB)')
+
+    with col2:
+        alkphos = st.text_input('Alkaline Phosphotase (Alkphos)')
+
+    with col3:
+        sgpt = st.text_input('Alamine Aminotransferase (Sgpt)')
+
+    with col1:
+        sgot = st.text_input('Aspartate Aminotransferase (Sgot)')
+
+    with col2:
+        tp = st.text_input('Total Proteins (TP)')
+
+    with col3:
+        alb = st.text_input('Albumin (ALB)')
+
+    with col1:
+        ag_ratio = st.text_input('Albumin and Globulin Ratio (A/G Ratio)')
+
+    # Code for Prediction
+    liver_diagnosis = ''
+
+    # Creating a button for Prediction
+    if st.button('Liver Disease Test Result'):
+
+        # Prepare the user input
+        user_input = [age, gender, tb, db, alkphos, sgpt, sgot, tp, alb, ag_ratio]
+
+        user_input = [float(x) for x in user_input]  # Convert inputs to float
+        user_input = np.asarray(user_input).reshape(1, -1)
+
+        # Feature scaling (assuming 'liver_scaler' is your scaler)
+        scaled_features = liver_scaler.transform(user_input)
+
+        # Prediction (assuming 'liver_model' is your trained ML model)
+        liver_prediction = liver_model.predict(scaled_features)
+
+        if liver_prediction[0] == 0:
+            liver_diagnosis = 'The person has liver disease'
+        else:
+            liver_diagnosis = 'The person does not have liver disease'
+
+    st.success(liver_diagnosis)
